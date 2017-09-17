@@ -1,8 +1,14 @@
 {
-  "name": "Start on Heroku: Node.js",
-  "description": "A barebones Node.js app using Express 4",
-  "repository": "https://github.com/heroku/node-js-getting-started",
+  "name": "Dabba Delivery",
+  "description": "A Node.js app for delivery dabba using Express 4",
+  "repository": "https://github.com/nodeXD/dabba-delivery.git",
   "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
-  "keywords": ["node", "express", "heroku"],
+  "keywords": [
+    "node",
+    "heroku",
+    "express",
+    "dabba",
+    "dabba-delivery"
+  ],
   "image": "heroku/nodejs"
 }
