@@ -25,14 +25,6 @@ app.use(favicon(path.join(__dirname, 'favicon.ico')))
 app.set('port', (process.env.PORT || 8000));
 
 app.get('/', function (req, res) {
-  db.collection('quotes').save({
-    "_id": Math.random(),
-    "name": "quotes one"
-  }, (err, result) => {
-    if (err) console.log(err);
-    else console.log(result);
-  });
-
   res.send({
     status: 200,
     data: {
