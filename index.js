@@ -55,35 +55,27 @@ app.get('/quotes', (req, res) => {
 });
 
 app.post('/quotes', (req, res) => {
-  if (req.body._id !== undefined) {
-    db.collection('quotes').save(req.body, (err, result) => {
-      if (err)
-        res.send({
-          status: 404,
-          data: {
-            error: {
-              message: err
-            }
-          }
-        });
-
+  if (req.body._id === undefined) 
+    req.body._id = Date.now();
+  
+  db.collection('quotes').save(req.body, (err, result) => {
+    if (err)
       res.send({
-        status: 200,
+        status: 404,
         data: {
-          message: "Quotes saved successfully"
+          error: {
+            message: err
+          }
         }
       });
-    });
-  } else {
+
     res.send({
-      status: 404,
+      status: 200,
       data: {
-        error: {
-          message: "_id not found"
-        }
+        message: "Quotes saved successfully"
       }
     });
-  }
+  });
 });
 
 app.listen(app.get('port'), function () {
