@@ -6,7 +6,6 @@ app.set('port', (process.env.PORT || 8000));
 app.use(express.static(__dirname + '/server/public'));
 
 // views is directory for all template files
-app.set('views', __dirname + '/sever/views/pages');
 app.set('view engine', 'html');
 
 app.get('/', function (request, response) {
