@@ -6,6 +6,9 @@ var favicon = require('serve-favicon');
 
 var app = express();
 
+process.env.MLAB_DB_USER = 'rjoydip';
+process.env.MLAB_DB_PASSWORD = 'rjoydip11';
+
 var mongo_url = process.env.MONGOLAB_URI ||
   process.env.MONGOHQ_URL ||
   `mongodb://${process.env.MLAB_DB_USER}:${process.env.MLAB_DB_PASSWORD}@ds139954.mlab.com:39954/dabba-delivery`;
