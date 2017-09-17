@@ -1,4 +1,3 @@
-var mongoose = require('mongodb');
 var express = require('express');
 var app = express();
 
