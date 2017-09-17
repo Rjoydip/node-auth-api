@@ -9,6 +9,7 @@ app.use(express.static(__dirname + '/server/public'));
 app.set('view engine', 'html');
 
 app.get('/', function (request, response) {
+  console.log("index");
   response.render('index');
 });
 
