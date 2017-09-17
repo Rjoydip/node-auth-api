@@ -60,7 +60,9 @@ app.post('/quotes', (req, res) => {
       res.send({
         status: 404,
         data: {
-          message: "Data not found"
+         error: {
+           message: err
+         }
         }
       });
 
