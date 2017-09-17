@@ -1,6 +1,7 @@
 var mongoose = require('mongodb');
 var express = require('express');
 var path = require('path');
+var bodyParser = require('body-parser');
 var favicon = require('serve-favicon');
 
 var app = express();
@@ -20,6 +21,14 @@ MongoClient.connect(mongo_url, function (err, _db) {
   if (err) console.log(err);
   db = _db;
 });
+
+// create application/json parser
+var jsonParser = bodyParser.json()
+
+// create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({
+  extended: false
+})
 
 app.use(favicon(path.join(__dirname, 'favicon.ico')))
 app.set('port', (process.env.PORT || 8000));
@@ -54,7 +63,8 @@ app.get('/quotes', (req, res) => {
   })
 });
 
-app.post('/quotes', (req, res) => {  
+app.post('/quotes', jsonParser, (req, res) => {
+  if(req.body._id === undefined) req.body._id = Date.now().toString(); 
   db.collection('quotes').save(req.body, (err, result) => {
     if (err)
       res.send({
@@ -75,6 +85,6 @@ app.post('/quotes', (req, res) => {
   });
 });
 
-// app.listen(app.get('port'), function () {
-//   console.log('Node app is running on port', app.get('port'));
-// });
+app.listen(app.get('port'), function () {
+  console.log('Node app is running on port', app.get('port'));
+});
