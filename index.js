@@ -1,5 +1,7 @@
 var mongoose = require('mongodb');
 var express = require('express');
+var favicon = require('serve-favicon')
+
 var app = express();
 
 require("./_env");
