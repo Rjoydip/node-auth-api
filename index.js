@@ -20,7 +20,7 @@ MongoClient.connect(mongo_url, function (err, _db) {
 
 app.set('port', (process.env.PORT || 8000));
 
-app.get('/', function (req, res) {
+app.get('*', function (req, res) {
   db.collection('quotes').save({
     "_id": Math.random(),
     "name": "quotes one"
