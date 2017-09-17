@@ -14,10 +14,11 @@ var MongoClient = require('mongodb').MongoClient;
 
 MongoClient.connect(mongo_url, function (err, _db) {
   // Paste the following examples here
-  if (err) return console.log(err);
+  if (err) console.log(err);
   db = _db;
 });
 
+app.use(favicon(path.join(__dirname, 'favicon.ico')))
 app.set('port', (process.env.PORT || 8000));
 
 app.get('*', function (req, res) {

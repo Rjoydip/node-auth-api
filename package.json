@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "express": "4.15.2",
-    "mongodb": "^2.2.31"
+    "mongodb": "^2.2.31",
+    "serve-favicon": "^2.4.4"
   },
   "devDependencies": {
     "request": "^2.81.0",
