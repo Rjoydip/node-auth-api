@@ -35,13 +35,13 @@ app.get('/', function (req, res) {
   res.send({
     status: 200,
     data: {
-      message: "Welcome to dabba delivery api"
+      message: "Welcome to delivery api"
     }
   });
 });
 
-app.get('/quotes', (req, res) => {
-  db.collection('quotes').find().toArray((err, result) => {
+app.get('/users', (req, res) => {
+  db.collection('users').find().toArray((err, result) => {
     if (err)
       res.send({
         status: 404,
@@ -61,9 +61,11 @@ app.get('/quotes', (req, res) => {
   })
 });
 
-app.post('/quotes', jsonParser, (req, res) => {
-  if (req.body._id === undefined) req.body._id = Date.now().toString();
-  db.collection('quotes').save(req.body, (err, result) => {
+
+app.post('/login', (req, res) => {
+  db.collection('users').find({
+    "username": req.body.username
+  }).toArray((err, result) => {
     if (err)
       res.send({
         status: 404,
@@ -77,7 +79,29 @@ app.post('/quotes', jsonParser, (req, res) => {
     res.send({
       status: 200,
       data: {
-        message: "Quotes saved successfully"
+        quotes: result
+      }
+    })
+  })
+});
+
+app.post('/registration', jsonParser, (req, res) => {
+  if (req.body._id === undefined) req.body._id = Date.now().toString();
+  db.collection('users').save(req.body, (err, result) => {
+    if (err)
+      res.send({
+        status: 404,
+        data: {
+          error: {
+            message: err
+          }
+        }
+      });
+
+    res.send({
+      status: 200,
+      data: {
+        message: "Users registered successfully"
       }
     });
   });
