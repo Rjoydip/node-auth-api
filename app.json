@@ -1,7 +1,7 @@
 {
-  "name": "Dabba Delivery",
+  "name": "Delivery api",
   "description": "A Node.js app for delivery dabba using Express 4",
-  "repository": "https://github.com/nodeXD/dabba-delivery.git",
+  "repository": "https://github.com/nodeXD/delivery.git",
   "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
   "keywords": [
     "node",

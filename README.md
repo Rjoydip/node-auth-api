@@ -1,6 +1,6 @@
 # delivery
 
-A barebones Node.js app using [Express 4](http://expressjs.com/).
+A barebones Node.js app using [Express 4](http://expressjs.com).
 
 ## Running Locally
 
@@ -11,7 +11,7 @@ $ npm install
 $ npm start
 ```
 
-Your app should now be running on [localhost:8000](http://localhost:5000/).
+Your app should now be running on [localhost:8000](http://localhost:8000).
 
 ## Deploying to Heroku
 
