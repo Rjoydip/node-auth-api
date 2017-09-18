@@ -8,7 +8,7 @@ require('dotenv').config();
 
 var app = express();
 
-var mongo_url = process.env.MONGOLAB_URI.toString();
+var mongo_url = process.env.MONGOLAB_URI;
 
 var db;
 
