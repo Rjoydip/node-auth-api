@@ -45,18 +45,14 @@ app.get('/users', (req, res) => {
     if (err)
       res.send({
         status: 404,
-        data: {
-          error: {
-            message: err
-          }
+        error: {
+          message: err
         }
       });
 
     res.send({
       status: 200,
-      data: {
-        quotes: result
-      }
+      data: result
     })
   })
 });
@@ -69,18 +65,14 @@ app.post('/login', (req, res) => {
     if (err)
       res.send({
         status: 404,
-        data: {
-          error: {
-            message: err
-          }
+        error: {
+          message: err
         }
       });
 
     res.send({
       status: 200,
-      data: {
-        quotes: result
-      }
+      data: result
     })
   })
 });
@@ -91,10 +83,8 @@ app.post('/registration', jsonParser, (req, res) => {
     if (err)
       res.send({
         status: 404,
-        data: {
-          error: {
-            message: err
-          }
+        error: {
+          message: err
         }
       });
 
