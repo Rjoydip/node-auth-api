@@ -62,7 +62,7 @@ app.get('/quotes', (req, res) => {
 });
 
 app.post('/quotes', jsonParser, (req, res) => {
-  if(req.body._id === undefined) req.body._id = Date.now().toString(); 
+  if (req.body._id === undefined) req.body._id = Date.now().toString();
   db.collection('quotes').save(req.body, (err, result) => {
     if (err)
       res.send({
