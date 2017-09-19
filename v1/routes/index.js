@@ -1,17 +1,13 @@
 "use strict";
-const auth = require("../routes/auth");
+const routes = require('express').Router();
 
-const apiPrifix = '/api/v1';
-
-module.exports = (app) => {
-    app.use(apiPrifix + '/', (req, res) => {
-        res.send({
-            status: 200,
-            data: {
-                message: "Welcome to delivery api"
-            }
-        });
+routes.get('/', (req, res) => {
+    res.send({
+        status: 200,
+        data: {
+            message: "Welcome to delivery api service"
+        }
     });
+});
 
-    app.use(apiPrifix + '/auth', auth);
-};
+module.exports = routes;

@@ -4,21 +4,9 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 
-const routes = require('./v1/routes');
 require('dotenv').config();
 
 const app = express();
-
-let _db,
-    apiPrifix = '/api/v1/';
-
-// db config
-require("./v1/configs/db")(
-  (db) => _db = db
-);
-
-// routes config
-require('./v1/routes')(app);
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
@@ -29,7 +17,19 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
-app.set('port', (process.env.PORT || 8000));
+app.set('port', (process.env.PORT || 8001));
+
+let _db,
+  apiPrifix = '/api/v1/';
+
+// db config
+require("./v1/configs/db")(
+  (db) => _db = db
+);
+
+//  Connect all our routes to our application
+app.use('/', require('./v1/routes'));
+app.use('/auth', require('./v1/routes/auth'));
 
 app.listen(app.get('port'), function () {
   console.log('Node app is running on port', app.get('port'));
