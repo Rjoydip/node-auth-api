@@ -28,8 +28,8 @@ require("./v1/configs/db")(
 );
 
 //  Connect all our routes to our application
-app.use('/', require('./v1/routes'));
-app.use('/auth', require('./v1/routes/auth'));
+app.use(apiPrifix + '/', require('./v1/routes'));
+app.use(apiPrifix + '/auth', require('./v1/routes/auth'));
 
 app.listen(app.get('port'), function () {
   console.log('Node app is running on port', app.get('port'));
