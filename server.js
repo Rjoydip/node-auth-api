@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
+var HTTPStatus = require('http-status');
 
 require('dotenv').config();
 
@@ -30,6 +31,17 @@ require("./v1/configs/db")(
 //  Connect all our routes to our application
 app.use(apiPrifix + '/', require('./v1/routes'));
 app.use(apiPrifix + '/auth', require('./v1/routes/auth'));
+
+app.use(function (req, res, next) {
+  if (!req.route)
+    res.send({
+      status: 502,
+      error: {
+        message: HTTPStatus[502]
+      }
+    });
+  next();
+});
 
 app.listen(app.get('port'), function () {
   console.log('Node app is running on port', app.get('port'));

@@ -1,8 +1,8 @@
 "use strict";
 
-const routes = require('express').Router();
+const router = require('express').Router();
 
-routes.get('/', (req, res) => {
+router.get('/', (req, res) => {
     res.send({
         status: 200,
         data: {
@@ -11,7 +11,7 @@ routes.get('/', (req, res) => {
     });
 });
 
-routes.get('/users', (req, res) => {
+router.get('/users', (req, res) => {
     res.send({
         status: 200,
         data: {
@@ -33,7 +33,7 @@ routes.get('/users', (req, res) => {
     });
 });
 
-routes.post('/login', (req, res) => {
+router.post('/login', (req, res) => {
     res.send({
         status: 200,
         data: {
@@ -42,7 +42,7 @@ routes.post('/login', (req, res) => {
     });
 });
 
-routes.post('/registration', (req, res) => {
+router.post('/registration', (req, res) => {
     res.send({
         status: 200,
         data: {
@@ -51,4 +51,4 @@ routes.post('/registration', (req, res) => {
     });
 });
 
-module.exports = routes;
+module.exports = router;
