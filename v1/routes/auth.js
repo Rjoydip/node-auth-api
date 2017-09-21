@@ -2,53 +2,11 @@
 
 const router = require('express').Router();
 
-router.get('/', (req, res) => {
-    res.send({
-        status: 200,
-        data: {
-            message: "Welcome to delivery api authentication service"
-        }
-    });
-});
+const authCtrl = require("../controller/auth");
 
-router.get('/users', (req, res) => {
-    res.send({
-        status: 200,
-        data: {
-            users: [
-                {
-                    name: "user one",
-                    country: "India"
-                },
-                {
-                    name: "user two",
-                    country: "Pakistan"
-                },
-                {
-                    name: "user three",
-                    country: "bangladesh"
-                }
-            ]
-        }
-    });
-});
-
-router.post('/login', (req, res) => {
-    res.send({
-        status: 200,
-        data: {
-            message: "Login successfull"
-        }
-    });
-});
-
-router.post('/registration', (req, res) => {
-    res.send({
-        status: 200,
-        data: {
-            message: "Registration successfull"
-        }
-    });
-});
+router.get('/', authCtrl.index);
+router.get('/users', authCtrl.users);
+router.post('/login', authCtrl.login);
+router.post('/register', authCtrl.register);
 
 module.exports = router;

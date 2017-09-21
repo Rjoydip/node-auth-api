@@ -2,23 +2,10 @@
 var HTTPStatus = require('http-status');
 const router = require('express').Router();
 
-router.get('/', (req, res) => {
-    res.send({
-        status: 200,
-        data: {
-            message: "Welcome to delivery api service"
-        }
-    });
-});
+const rootCtrl = require("../controller/root");
 
-router.get('/version', (req, res) => {
-    res.send({
-        status: 200,
-        data: {
-            version: require("../../package.json").version 
-        }
-    });
-});
+router.get('/', rootCtrl.index);
+router.get('/version', rootCtrl.version);
 
 router.use('/auth', require("../routes/auth"));
 

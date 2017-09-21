@@ -7,4 +7,4 @@ module.exports = (done) => {
         if (err) done(err);
         else done(db);
     });
-}
+};
