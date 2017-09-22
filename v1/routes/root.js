@@ -3,12 +3,14 @@ var HTTPStatus = require('http-status');
 const router = require('express').Router();
 
 const {
-    logger
+    logger,
+    isAuthenticated
 } = require("../middleware");
 
 const rootCtrl = require("../controller/root");
 
 router.use(logger);
+router.use(isAuthenticated);
 
 router.get('/', rootCtrl.index);
 router.get('/version', rootCtrl.version);
