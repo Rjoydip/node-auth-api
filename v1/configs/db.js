@@ -1,19 +1,19 @@
 "use strict";
-const MongoClient = require('mongodb').MongoClient;
+
+//Import the mongoose module
+var mongoose = require('mongoose');
+
+//Set up default mongoose connection
 const mongo_url = process.env.MONGOLAB_URI;
+mongoose.connect(mongo_url, {
+    useMongoClient: true,
+    promiseLibrary: global.Promise
+});
 
-let DB_CONNECTION_STATUS = false;
+//Get the default connection
+let db = mongoose.connection;
 
-let DB = module.exports = exports => {};
+//Bind connection to error event (to get notification of connection errors)
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-DB.init = () => {
-    MongoClient.connect(mongo_url, function (err, db) {
-        if (err) done(err);
-        else {
-            DB_CONNECTION_STATUS = true;
-            console.log("DB running status ->", DB_CONNECTION_STATUS);
-        }
-    });
-};
-
-DB.init();
+module.exports = db;

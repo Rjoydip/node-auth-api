@@ -1,7 +1,6 @@
 "use strict";
 
 const router = require('express').Router();
-
 const authCtrl = require("../controller/auth");
 
 router.get('/', authCtrl.index);
