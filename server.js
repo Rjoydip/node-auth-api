@@ -1,23 +1,24 @@
 const cluster = require("cluster");
 const os = require("os");
 
+require('dotenv').config();
+
 const API_VERSION = 1;
 const CPUS = os.cpus();
 
 if (cluster.isMaster) {
-  CPUS.forEach(function () {
+  CPUS.forEach(() => {
     cluster.fork()
   });
-  cluster.on("listening", function (worker) {
+  cluster.on("listening", (worker) => {
     console.log("Cluster %d connected", worker.process.pid);
   });
-  cluster.on("disconnect", function (worker) {
+  cluster.on("disconnect", (worker) => {
     console.log("Cluster %d disconnected", worker.process.pid);
   });
-  cluster.on("exit", function (worker) {
+  cluster.on("exit", (worker) => {
     process.env.PORT = (!Boolean(process.env.PORT)) ? 8100 : process.env.PORT;
     console.log("Cluster %d is dead", worker.process.pid);
-    console.log("After",process.env.PORT);
     // Ensuring a new cluster will start if an old one dies
     cluster.fork();
   });
@@ -28,7 +29,7 @@ if (cluster.isMaster) {
     db
   } = require(`./v${API_VERSION}/configs`);
 
-  app.listen(PORT, function () {
+  app.listen(PORT, () => {
     console.log('Node app is running on port', PORT);
   });
 

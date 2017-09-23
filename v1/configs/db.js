@@ -1,13 +1,13 @@
 "use strict";
 
 //Import the mongoose module
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const { MONGOLAB_URI } = require("../configs");
 
 //Set up default mongoose connection
-const mongo_url = process.env.MONGOLAB_URI;
+const mongo_url = process.env.MONGOLAB_URI || MONGOLAB_URI;
 mongoose.connect(mongo_url, {
-    useMongoClient: true,
-    promiseLibrary: global.Promise
+    useMongoClient: true
 });
 
 //Get the default connection

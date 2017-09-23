@@ -7,11 +7,12 @@ const favicon = require('serve-favicon');
 const cors = require("cors");
 const compression = require("compression");
 const helmet = require("helmet");
+const morgan = require('morgan');
 
-require('dotenv').config();
-
+const {
+  SUPER_SECRET
+} = require("./configs");
 const API_PREFIX = '/api/v1';
-
 const app = express();
 
 /*
@@ -50,6 +51,9 @@ app.use(compression());
  *
  */
 app.use(helmet());
+
+// use morgan to log requests to the console
+app.use(morgan('dev'));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({

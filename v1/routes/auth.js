@@ -2,10 +2,13 @@
 
 const router = require('express').Router();
 const authCtrl = require("../controller/auth");
+const {
+    verifyToken,
+} = require("../middleware");
 
 router.get('/', authCtrl.index);
-router.get('/users', authCtrl.users);
 router.post('/login', authCtrl.login);
 router.post('/register', authCtrl.register);
+router.post('/user', verifyToken, authCtrl.user);
 
 module.exports = router;

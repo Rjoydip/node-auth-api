@@ -7,10 +7,10 @@ const Schema = mongoose.Schema;
 const User = new Schema({
     username: String,
     password: {
-        type: String,
-        select: false
+        type: String
     },
     email: String,
+    token: String,
     admin: {
         type: Boolean,
         default: false

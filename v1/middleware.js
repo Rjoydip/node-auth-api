@@ -1,33 +1,39 @@
 "use strict";
-const HTTPStatus = require('http-status');
+const jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 const {
     resPayload
 } = require("./utils");
 const {
-    secret
+    SUPER_SECRET
 } = require("./configs/index");
 
-module.exports.logger = (req, res, next) => {
-    process.stdout.write(`\n${new Date(), req.method, req.url}`);
+module.exports.notFound = (req, res, next) => {
+    if (!req.route)
+        resPayload(502, {}, (data) => res.send(data));
     next();
 };
 
-module.exports.isAuthenticated = (req, res, next) => {
-
-    // do any checks you want to in here
-
-    if (req.user === undefined || req.session === undefined) {
-        req.user = {};
-        req.session = {};
-        req['user']['authenticated'] = secret;
-    }
-
-    // CHECK THE USER STORED IN SESSION FOR A CUSTOM VARIABLE
-    // you can do this however you want with whatever variables you set up
-    if (req.user !== undefined || req.session !== undefined)
-        if (req.session.auth || req.user.authenticated)
-            return next();
-
-    // IF A USER ISN'T LOGGED IN, THEN REDIRECT THEM SOMEWHERE
-    resPayload(401, {}, (data) => res.send(data));
-}
+module.exports.verifyToken = (req, res, next) => {
+    // check header or url parameters or post parameters for token
+    let token = req.body.token || req.query.token || req.headers['x-access-token'];
+    // decode token
+    if (token)
+        // verifies secret and checks exp
+        jwt.verify(token, SUPER_SECRET, function (err, decoded) {
+            console.log(decoded)
+            if (err)
+                return res.json({
+                    success: false,
+                    message: 'Failed to authenticate token.'
+                });
+            else
+                // if everything is good, save to request for use in other routes
+                req.decoded = decoded;
+            next();
+        });
+    else // if there is no token return an error
+        return res.status(403).send({
+            success: false,
+            message: 'No token provided.'
+        });
+};
