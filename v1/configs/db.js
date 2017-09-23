@@ -6,11 +6,10 @@ const {
     MONGOLAB_URI
 } = require("./index");
 
-console.log(process.env.MONGOLAB_URI);
+console.log(MONGOLAB_URI);
 
 //Set up default mongoose connection
-const mongo_url = process.env.MONGOLAB_URI || MONGOLAB_URI;
-mongoose.connect(mongo_url, {
+mongoose.connect(process.env.MONGOLAB_URI || MONGOLAB_URI, {
     useMongoClient: true
 });
 
