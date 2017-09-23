@@ -6,6 +6,9 @@ const {
 const {
     resPayload
 } = require("./utils");
+const {
+    API_PREFIX
+} = require("./configs");
 const rootCtrl = require("./controller/root");
 
 // middleware for app
@@ -13,7 +16,7 @@ const rootCtrl = require("./controller/root");
 // root routes collections
 router.use('', require("./routes/root"));
 // authentication routes collections
-router.use('/auth', require("./routes/auth"));
+router.use(API_PREFIX + '/auth', require("./routes/auth"));
 
 // if route not found
 router.use(notFound);
