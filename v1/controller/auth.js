@@ -9,26 +9,12 @@ const {
 } = require("../configs/index");
 const User = require("../model/user");
 
-const users = [{
-        name: "user one",
-        country: "India"
-    },
-    {
-        name: "user two",
-        country: "Pakistan"
-    },
-    {
-        name: "user three",
-        country: "bangladesh"
-    }
-];
-
 let auth = module.exports = exports = {};
 
 auth.index = (req, res) => {
     User.find({}, function (err, users) {
         if (err)
-            return resPayload(611, {
+            return resPayload(200, {
                 message: err
             }, (data) => res.send(data));
 
@@ -43,7 +29,7 @@ auth.user = (req, res) => {
         username: req.body.username
     }, function (err, users) {
         if (err)
-            return resPayload(611, {
+            return resPayload(200, {
                 message: err
             }, (data) => res.send(data));
 
@@ -58,7 +44,7 @@ auth.login = (req, res) => {
         username: req.body.username
     }, function (err, user) {
         if (err)
-            return resPayload(613, {
+            return resPayload(200, {
                 message: err
             }, (data) => res.send(data));
 
@@ -68,7 +54,7 @@ auth.login = (req, res) => {
             }, (data) => res.send(data));
 
         if (req.body.password !== user.password)
-            return resPayload(613, {
+            return resPayload(200, {
                 message: 'Authentication failed. Wrong password.'
             }, (data) => res.send(data));
         else {
@@ -104,7 +90,7 @@ auth.register = (req, res) => {
     let user = new User(req.body);
     user.save((err) => {
         if (err)
-            return resPayload(610, {
+            return resPayload(200, {
                 message: err
             }, (data) => res.send(data));;
 

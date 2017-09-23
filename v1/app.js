@@ -10,9 +10,9 @@ const helmet = require("helmet");
 const morgan = require('morgan');
 
 const {
-  SUPER_SECRET
+  SUPER_SECRET,
+  API_PREFIX
 } = require("./configs");
-const API_PREFIX = '/api/v1';
 const app = express();
 
 /*
@@ -48,7 +48,6 @@ app.use(compression());
   7. Prevents sniffing attacks on the client Mime Type;
   8. Prevents ClickJacking attacks;
   9. Protects against XSS (Cross-Site Scripting) attacks.
- *
  */
 app.use(helmet());
 
@@ -62,11 +61,11 @@ app.use(bodyParser.urlencoded({
 
 // parse application/json
 app.use(bodyParser.json());
-
+// serve favicon
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
 
 //  Connect all our routes to our application
-app.use(API_PREFIX, require('./routes'));
+app.use(require('./routes'));
 
 // exposing app
 module.exports = exports = app;

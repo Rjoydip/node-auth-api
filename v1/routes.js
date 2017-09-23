@@ -3,10 +3,10 @@ const router = require('express').Router();
 const {
     notFound
 } = require("./middleware");
-const rootCtrl = require("./controller/root");
 const {
     resPayload
 } = require("./utils");
+const rootCtrl = require("./controller/root");
 
 // middleware for app
 

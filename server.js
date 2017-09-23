@@ -2,8 +2,9 @@ const cluster = require("cluster");
 const os = require("os");
 
 require('dotenv').config();
-
-const API_VERSION = 1;
+const {
+  API_VERSION
+} = require("./v1/configs");
 const CPUS = os.cpus();
 
 if (cluster.isMaster) {
@@ -24,10 +25,10 @@ if (cluster.isMaster) {
   });
 } else {
   const PORT = (!Boolean(process.env.PORT)) ? 8100 : process.env.PORT;
-  const app = require(`./v${API_VERSION}/app`);
+  const app = require(`./v${process.env.API_VERSION || API_VERSION}/app`);
   const {
     db
-  } = require(`./v${API_VERSION}/configs`);
+  } = require(`./v${process.env.API_VERSION || API_VERSION}/configs`);
 
   app.listen(PORT, () => {
     console.log('Node app is running on port', PORT);
