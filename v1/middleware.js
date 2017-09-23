@@ -1,8 +1,14 @@
 "use strict";
-var HTTPStatus = require('http-status');
+const HTTPStatus = require('http-status');
+const {
+    resPayload
+} = require("./utils");
+const {
+    secret
+} = require("./configs/index");
 
 module.exports.logger = (req, res, next) => {
-    console.log(new Date(), req.method, req.url);
+    process.stdout.write(`\n${new Date(), req.method, req.url}`);
     next();
 };
 
@@ -10,17 +16,18 @@ module.exports.isAuthenticated = (req, res, next) => {
 
     // do any checks you want to in here
 
+    if (req.user === undefined || req.session === undefined) {
+        req.user = {};
+        req.session = {};
+        req['user']['authenticated'] = secret;
+    }
+
     // CHECK THE USER STORED IN SESSION FOR A CUSTOM VARIABLE
     // you can do this however you want with whatever variables you set up
     if (req.user !== undefined || req.session !== undefined)
-        if(req.session.auth || req.user.authenticated)
+        if (req.session.auth || req.user.authenticated)
             return next();
 
     // IF A USER ISN'T LOGGED IN, THEN REDIRECT THEM SOMEWHERE
-    res.send({
-        status: 401,
-        error: {
-            message: HTTPStatus[401]
-        }
-    });
+    resPayload(401, {}, (data) => res.send(data));
 }

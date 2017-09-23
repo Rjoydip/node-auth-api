@@ -22,7 +22,9 @@ if (cluster.isMaster) {
 } else {
   const PORT = process.env.PORT || 8080;
   const app = require(`./v${API_VERSION}/app`);
-  const db = require(`./v${API_VERSION}/configs/db`);
+  const {
+    db
+  } = require(`./v${API_VERSION}/configs`);
 
   app.listen(PORT, function () {
     console.log('Node app is running on port', PORT);

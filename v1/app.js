@@ -1,11 +1,12 @@
 "use strict";
+
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 const cors = require("cors");
-var compression = require("compression");
-var helmet = require("helmet");
+const compression = require("compression");
+const helmet = require("helmet");
 
 require('dotenv').config();
 
@@ -61,5 +62,7 @@ app.use(bodyParser.json());
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
 
 //  Connect all our routes to our application
-app.use(API_PREFIX, require('./routes/root'));
+app.use(API_PREFIX, require('./routes'));
+
+// exposing app
 module.exports = exports = app;

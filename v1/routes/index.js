@@ -1,13 +1,14 @@
 "use strict";
-var HTTPStatus = require('http-status');
+const HTTPStatus = require('http-status');
 const router = require('express').Router();
-
 const {
     logger,
     isAuthenticated
 } = require("../middleware");
-
 const rootCtrl = require("../controller/root");
+const {
+    resPayload
+} = require("../utils");
 
 router.use(logger);
 router.use(isAuthenticated);
@@ -19,12 +20,7 @@ router.use('/auth', require("../routes/auth"));
 
 router.use(function (req, res, next) {
     if (!req.route)
-        res.send({
-            status: 502,
-            error: {
-                message: HTTPStatus[502]
-            }
-        });
+        resPayload(502, {}, (data) => res.send(data));
     next();
 });
 

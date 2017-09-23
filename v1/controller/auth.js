@@ -44,6 +44,7 @@ auth.login = (req, res) => {
 auth.register = (req, res) => {
     res.send({
         status: 200,
+        success: true,
         data: {
             message: "Registration successfull"
         }
