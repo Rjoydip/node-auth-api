@@ -1,4 +1,5 @@
 "sue strict";
+
 module.exports = {
     API_VERSION: 1,
     API_PREFIX: '/api/v1',

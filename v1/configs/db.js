@@ -2,7 +2,11 @@
 
 //Import the mongoose module
 const mongoose = require('mongoose');
-const { MONGOLAB_URI } = require("../configs");
+const {
+    MONGOLAB_URI
+} = require("./index");
+
+console.log(process.env.MONGOLAB_URI);
 
 //Set up default mongoose connection
 const mongo_url = process.env.MONGOLAB_URI || MONGOLAB_URI;
