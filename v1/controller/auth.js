@@ -12,9 +12,17 @@ const User = require("../model/user");
 let auth = module.exports = exports = {};
 
 auth.index = (req, res) => {
-    User.find({}, function (err, users) {
+    return resPayload(200, {
+        message: "Welcome to delivery api authentication service"
+    }, (data) => res.send(data));
+};
+
+auth.user = (req, res) => {
+    User.find({
+        username: req.body.username
+    }, function (err, users) {
         if (err)
-            return resPayload(200, {
+            return resPayload(400, {
                 message: err
             }, (data) => res.send(data));
 
@@ -24,12 +32,10 @@ auth.index = (req, res) => {
     });
 };
 
-auth.user = (req, res) => {
-    User.find({
-        username: req.body.username
-    }, function (err, users) {
+auth.users = (req, res) => {
+    User.find({}, function (err, users) {
         if (err)
-            return resPayload(200, {
+            return resPayload(400, {
                 message: err
             }, (data) => res.send(data));
 
@@ -44,17 +50,17 @@ auth.login = (req, res) => {
         username: req.body.username
     }, function (err, user) {
         if (err)
-            return resPayload(200, {
+            return resPayload(400, {
                 message: err
             }, (data) => res.send(data));
 
         if (!user)
-            return resPayload(200, {
+            return resPayload(400, {
                 message: 'Authentication failed. User not found.'
             }, (data) => res.send(data));
 
         if (req.body.password !== user.password)
-            return resPayload(200, {
+            return resPayload(400, {
                 message: 'Authentication failed. Wrong password.'
             }, (data) => res.send(data));
         else {
@@ -90,7 +96,7 @@ auth.register = (req, res) => {
     let user = new User(req.body);
     user.save((err) => {
         if (err)
-            return resPayload(200, {
+            return resPayload(400, {
                 message: err
             }, (data) => res.send(data));;
 

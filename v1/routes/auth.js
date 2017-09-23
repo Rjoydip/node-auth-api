@@ -9,6 +9,7 @@ const {
 router.get('/', authCtrl.index);
 router.post('/login', authCtrl.login);
 router.post('/register', authCtrl.register);
-router.post('/user', verifyToken, authCtrl.user);
+router.get('/user', verifyToken, authCtrl.index);
+router.get('/users', verifyToken, authCtrl.users);
 
 module.exports = router;
