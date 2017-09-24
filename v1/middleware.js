@@ -5,7 +5,7 @@ const {
 } = require("./utils");
 const {
     SUPER_SECRET
-} = require("./configs/index");
+} = require("./configs");
 
 module.exports.verifyToken = (req, res, next) => {
     // check header or url parameters or post parameters for token

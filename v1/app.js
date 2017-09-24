@@ -11,10 +11,14 @@ const helmet = require("helmet");
 const morgan = require('morgan');
 const HTTPStatus = require('http-status');
 
+require("./db");
+
 const {
   SUPER_SECRET,
   API_PREFIX
 } = require("./configs");
+
+// express app instance
 const app = express();
 
 /*
@@ -86,6 +90,13 @@ app.use((err, req, res, next) => {
   // render the error page
   res.status(err.status || 500);
   res.send(err);
+});
+
+let PORT = process.env.PORT = (!Boolean(process.env.PORT)) ? 8100 : process.env.PORT;
+
+// app listen
+app.listen(PORT, () => {
+  console.log('Node app is running on port', PORT);
 });
 
 module.exports = app;

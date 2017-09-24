@@ -4,15 +4,13 @@ const crypto = require("crypto");
 const jwt = require('jsonwebtoken');
 
 const {
-    API_PREFIX
+    API_PREFIX,
+    SUPER_SECRET
 } = require("../configs");
 const {
     sendMail,
     resPayload
 } = require("../utils");
-const {
-    SUPER_SECRET
-} = require("../configs/index");
 const Users = require("../model/users");
 
 let auth = module.exports = exports = {};
@@ -93,9 +91,8 @@ auth.setToken = (req, res) => {
                     return resPayload(200, "Password saved successfully", (data) => res.send(data));
                 });
             });
-        }).catch(
-            err => resPayload(404, err, (data) => res.send(data))
-        );
+        })
+        .catch(err => resPayload(404, err, (data) => res.send(data)));
 };
 
 auth.forgot = (req, res) => {
@@ -127,9 +124,8 @@ auth.forgot = (req, res) => {
                     });
                 });
             });
-        }).catch(
-            err => resPayload(404, err, (data) => res.send(data))
-        );
+        })
+        .catch(err => resPayload(404, err, (data) => res.send(data)));
 };
 
 auth.login = (req, res) => {

@@ -4,7 +4,7 @@
 const mongoose = require('mongoose');
 const {
     MONGOLAB_URI
-} = require("./index");
+} = require("./configs");
 
 //Set up default mongoose connection
 mongoose.connect(process.env.MONGOLAB_URI || MONGOLAB_URI, {
