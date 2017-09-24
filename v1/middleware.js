@@ -8,6 +8,7 @@ const {
 } = require("./configs");
 
 module.exports.verifyToken = (req, res, next) => {
+
     // check header or url parameters or post parameters for token
     let token = req.body.token || req.query.token || req.headers['x-access-token'];
     // decode token
@@ -15,13 +16,11 @@ module.exports.verifyToken = (req, res, next) => {
         // verifies secret and checks exp
         jwt.verify(token, SUPER_SECRET, function (err, decoded) {
             if (err)
-                return res.json({
+                next({
                     success: false,
-                    message: 'Failed to authenticate token.'
+                    message: 'Failed to authenticate token. Please generate fresh token by login'
                 });
-            else
-                // if everything is good, save to request for use in other routes
-                req.decoded = decoded;
+
             next();
         });
     else // if there is no token return an error
