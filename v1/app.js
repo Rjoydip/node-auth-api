@@ -58,13 +58,12 @@ app.use(morgan('dev'));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(cookieParser());
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
 
 //  Connect all our routes to our application
@@ -86,7 +85,7 @@ app.use((err, req, res, next) => {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.send(err);
 });
 
 module.exports = app;

@@ -11,6 +11,11 @@ const User = new Schema({
     },
     email: String,
     token: String,
+    resetToken: String,
+    resetTokenExpires: {
+        type: Date,
+        default: Date.now
+    },
     admin: {
         type: Boolean,
         default: false
@@ -25,4 +30,4 @@ const User = new Schema({
     }
 });
 
-module.exports = mongoose.model('User', User);
+module.exports = mongoose.model('Users', User);

@@ -1,132 +1,215 @@
 "use strict";
 const bcrypt = require('bcrypt');
+const crypto = require("crypto");
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 
 const {
+    API_PREFIX
+} = require("../configs");
+const {
+    sendMail,
     resPayload
 } = require("../utils");
 const {
     SUPER_SECRET
 } = require("../configs/index");
-const User = require("../model/user");
+const Users = require("../model/users");
 
 let auth = module.exports = exports = {};
 
 auth.index = (req, res) => {
-    res.render('index', {
-        title: "Welcome to delivery api authentication service"
-    });
+    return resPayload(404, {
+        message: "Welcome to delivery api authentication service"
+    }, (data) => res.send(data));
 };
 
 auth.user = (req, res) => {
-    User.find({
-        username: req.body.username
-    }, function (err, users) {
-        if (err)
-            return resPayload(400, {
+    Users
+        .findOne({
+            username: req.body.username
+        })
+        .select(['-password', '-token', '-resetTokenExpires', '-created_at', '-updated_at', '-__v'])
+        .exec()
+        .then(
+            user => resPayload(200, user, (data) => res.send(data))
+        ).catch(
+            err => resPayload(404, {
                 message: err
-            }, (data) => res.send(data));
-
-        return resPayload(200, {
-            users
-        }, (data) => res.send(data));
-    });
+            }, (data) => res.send(data))
+        );
 };
 
 auth.users = (req, res) => {
-    User.find({}, function (err, users) {
-        if (err)
-            return resPayload(400, {
-                message: err
-            }, (data) => res.send(data));
-
-        return resPayload(200, {
-            users
-        }, (data) => res.send(data));
-    });
+    Users
+        .find()
+        .select(['-password', '-token', '-resetTokenExpires', '-created_at', '-updated_at', '-__v'])
+        .exec()
+        .then(users => resPayload(200, users, (data) => res.send(data)))
+        .catch(err => resPayload(404, {
+            message: err
+        }, (data) => res.send(data)));
 };
 
-auth.reset = (req, res) => {
-    User.find({
-        email: req.body.email
-    }, function (err, users) {
-        if (err)
-            return resPayload(400, {
-                message: err
-            }, (data) => res.send(data));
-
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS
+auth.matchToken = (req, res) => {
+    Users.findOne({
+            resetToken: req.params.token,
+            resetTokenExpires: {
+                $gt: Date.now()
             }
-        });
+        })
+        .exec()
+        .then(user => {
+            if (!user)
+                return resPayload(404, {
+                    message: "User not found"
+                }, (data) => res.send(data));
 
-        const mailOptions = {
-            from: 'joydipand@gmail.com',
-            to: 'joydipand@gmail.com',
-            subject: 'Sending Email using Node and Nodemailer',
-            text: 'That was easy!'
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) console.log(error);
             return resPayload(200, {
-                info
+                token: req.params.token
             }, (data) => res.send(data));
-        });
+        }).catch(
+            err => resPayload(404, {
+                err
+            }, (data) => res.send(data))
+        );
+};
 
-        return resPayload(200, {
-            users
-        }, (data) => res.send(data));
-    });
+auth.setToken = (req, res) => {
+    Users
+        .findOne({
+            resetToken: req.params.token,
+            resetTokenExpires: {
+                $gt: Date.now()
+            }
+        })
+        .exec()
+        .then(user => {
+            if (!user) {
+                return res.redirect('back');
+            }
+            bcrypt.hash(req.body.password, 10, function (err, hash) {
+                if (err)
+                    return resPayload(404, {
+                        message: err
+                    }, (data) => res.send(data));
+
+                // Store hash in database
+                user.password = hash;
+                user.resetToken = undefined;
+                user.resetTokenExpires = undefined;
+
+                user.save((err) => {
+                    if (err)
+                        return resPayload(404, {
+                            message: "Oops! password doesn't saved. Please try again!"
+                        }, (data) => res.send(data));
+
+                    return resPayload(200, {
+                        message: "Password saved successfully"
+                    }, (data) => res.send(data));
+                });
+            });
+        }).catch(
+            err => resPayload(404, {
+                err
+            }, (data) => res.send(data))
+        );
+};
+
+auth.forgot = (req, res) => {
+    Users
+        .findOne({
+            email: req.body.email
+        })
+        .exec()
+        .then(user => {
+            if (!user)
+                return resPayload(404, {
+                    message: "User not found"
+                }, (data) => res.send(data));
+
+            crypto.randomBytes(20, function (err, buf) {
+                if (err)
+                    return resPayload(404, {
+                        err
+                    }, (data) => res.send(data));
+
+                let token = buf.toString('hex');
+
+                user.resetToken = token;
+                user.resetTokenExpires = Date.now() + 3600000; // 1 hour
+
+                sendMail(user, token, req.headers.host, (error, info) => {
+                    if (error)
+                        return resPayload(404, {
+                            error
+                        }, (data) => res.send(data));
+
+                    user.save(function (err) {
+                        if (err)
+                            return resPayload(404, {
+                                message: "Oops! faild to saved token. Please try again!"
+                            }, (data) => res.send(data));
+
+                        return resPayload(200, {
+                            info
+                        }, (data) => res.send(data));
+                    });
+                });
+            });
+        }).catch(
+            err => resPayload(404, {
+                err
+            }, (data) => res.send(data))
+        );
 };
 
 auth.login = (req, res) => {
-    User.findOne({
-        username: req.body.username
-    }, function (err, user) {
-        if (err)
-            return resPayload(400, {
-                message: err
-            }, (data) => res.send(data));
-
-        if (!user)
-            return resPayload(400, {
-                message: 'User not found.'
-            }, (data) => res.send(data));
-
-        bcrypt.compare(req.body.password, user.password, function (err, matched) {
-            if (err) // Passwords match
-                return resPayload(400, {
-                    message: 'Authentication failed. Wrong password.'
+    Users
+        .findOne({
+            username: req.body.username
+        })
+        .exec()
+        .then(user => {
+            if (!user)
+                return resPayload(404, {
+                    message: 'User not found.'
                 }, (data) => res.send(data));
 
-            if (!matched)
-                return resPayload(400, {
-                    message: 'Authentication failed. Wrong password.'
-                }, (data) => res.send(data));
+            bcrypt.compare(req.body.password, user.password, function (err, matched) {
+                if (err) // Passwords match
+                    return resPayload(404, {
+                        message: 'Authentication failed. Wrong password.'
+                    }, (data) => res.send(data));
 
-            let token = jwt.sign({
-                username: user.username
-            }, SUPER_SECRET, {
-                expiresIn: '10m',
-                algorithm: 'HS256'
-            });
+                if (!matched)
+                    return resPayload(404, {
+                        message: 'Authentication failed. Wrong password.'
+                    }, (data) => res.send(data));
 
-            User.update({
-                _id: user._id
-            }, {
-                token
-            }, () => {
-                return resPayload(200, {
+                let token = jwt.sign({
+                    username: user.username
+                }, SUPER_SECRET, {
+                    expiresIn: '10m',
+                    algorithm: 'HS256'
+                });
+
+                Users.update({
+                    _id: user._id
+                }, {
                     token
-                }, (data) => res.send(data));
+                }, () => {
+                    return resPayload(200, {
+                        token
+                    }, (data) => res.send(data));
+                });
             });
-        });
-    });
+        })
+        .catch(
+            err => resPayload(404, {
+                message: err
+            }, (data) => res.send(data))
+        );
 };
 
 auth.register = (req, res) => {
@@ -140,16 +223,16 @@ auth.register = (req, res) => {
 
     bcrypt.hash(req.body.password, 10, function (err, hash) {
         if (err)
-            return resPayload(400, {
+            return resPayload(404, {
                 message: err
             }, (data) => res.send(data));;
 
         // Store hash in database
         req.body.password = hash;
-        let user = new User(req.body);
+        let user = new Users(req.body);
         user.save((err) => {
             if (err)
-                return resPayload(400, {
+                return resPayload(404, {
                     message: err
                 }, (data) => res.send(data));;
 
