@@ -18,9 +18,7 @@ const Users = require("../model/users");
 let auth = module.exports = exports = {};
 
 auth.index = (req, res) => {
-    return resPayload(404, {
-        message: "Welcome to delivery api authentication service"
-    }, (data) => res.send(data));
+    return resPayload(404, "Welcome to delivery api authentication service", (data) => res.send(data));
 };
 
 auth.user = (req, res) => {
@@ -33,9 +31,7 @@ auth.user = (req, res) => {
         .then(
             user => resPayload(200, user, (data) => res.send(data))
         ).catch(
-            err => resPayload(404, {
-                message: err
-            }, (data) => res.send(data))
+            err => resPayload(404, err, (data) => res.send(data))
         );
 };
 
@@ -45,9 +41,7 @@ auth.users = (req, res) => {
         .select(['-password', '-token', '-resetTokenExpires', '-created_at', '-updated_at', '-__v'])
         .exec()
         .then(users => resPayload(200, users, (data) => res.send(data)))
-        .catch(err => resPayload(404, {
-            message: err
-        }, (data) => res.send(data)));
+        .catch(err => resPayload(404, err, (data) => res.send(data)));
 };
 
 auth.matchToken = (req, res) => {
@@ -60,17 +54,13 @@ auth.matchToken = (req, res) => {
         .exec()
         .then(user => {
             if (!user)
-                return resPayload(404, {
-                    message: "User not found"
-                }, (data) => res.send(data));
+                return resPayload(404, "User not found", (data) => res.send(data));
 
             return resPayload(200, {
                 token: req.params.token
             }, (data) => res.send(data));
         }).catch(
-            err => resPayload(404, {
-                err
-            }, (data) => res.send(data))
+            err => resPayload(404, err, (data) => res.send(data))
         );
 };
 
@@ -89,9 +79,7 @@ auth.setToken = (req, res) => {
             }
             bcrypt.hash(req.body.password, 10, function (err, hash) {
                 if (err)
-                    return resPayload(404, {
-                        message: err
-                    }, (data) => res.send(data));
+                    return resPayload(404, err, (data) => res.send(data));
 
                 // Store hash in database
                 user.password = hash;
@@ -100,19 +88,13 @@ auth.setToken = (req, res) => {
 
                 user.save((err) => {
                     if (err)
-                        return resPayload(404, {
-                            message: "Oops! password doesn't saved. Please try again!"
-                        }, (data) => res.send(data));
+                        return resPayload(404, "Oops! password doesn't saved. Please try again!", (data) => res.send(data));
 
-                    return resPayload(200, {
-                        message: "Password saved successfully"
-                    }, (data) => res.send(data));
+                    return resPayload(200, "Password saved successfully", (data) => res.send(data));
                 });
             });
         }).catch(
-            err => resPayload(404, {
-                err
-            }, (data) => res.send(data))
+            err => resPayload(404, err, (data) => res.send(data))
         );
 };
 
@@ -124,43 +106,29 @@ auth.forgot = (req, res) => {
         .exec()
         .then(user => {
             if (!user)
-                return resPayload(404, {
-                    message: "User not found"
-                }, (data) => res.send(data));
+                return resPayload(404, "User not found", (data) => res.send(data));
 
             crypto.randomBytes(20, function (err, buf) {
                 if (err)
-                    return resPayload(404, {
-                        err
-                    }, (data) => res.send(data));
+                    return resPayload(404, err, (data) => res.send(data));
 
-                let token = buf.toString('hex');
-
-                user.resetToken = token;
+                user.resetToken = buf.toString('hex');
                 user.resetTokenExpires = Date.now() + 3600000; // 1 hour
 
-                sendMail(user, token, req.headers.host, (error, info) => {
+                sendMail(user, user.resetToken, req.headers.host, (error, info) => {
                     if (error)
-                        return resPayload(404, {
-                            error
-                        }, (data) => res.send(data));
+                        return resPayload(404, error, (data) => res.send(data));
 
                     user.save(function (err) {
                         if (err)
-                            return resPayload(404, {
-                                message: "Oops! faild to saved token. Please try again!"
-                            }, (data) => res.send(data));
+                            return resPayload(404, "Oops! faild to saved token. Please try again!", (data) => res.send(data));
 
-                        return resPayload(200, {
-                            info
-                        }, (data) => res.send(data));
+                        return resPayload(200, info, (data) => res.send(data));
                     });
                 });
             });
         }).catch(
-            err => resPayload(404, {
-                err
-            }, (data) => res.send(data))
+            err => resPayload(404, err, (data) => res.send(data))
         );
 };
 
@@ -172,20 +140,14 @@ auth.login = (req, res) => {
         .exec()
         .then(user => {
             if (!user)
-                return resPayload(404, {
-                    message: 'User not found.'
-                }, (data) => res.send(data));
+                return resPayload(404, 'User not found.', (data) => res.send(data));
 
             bcrypt.compare(req.body.password, user.password, function (err, matched) {
                 if (err) // Passwords match
-                    return resPayload(404, {
-                        message: 'Authentication failed. Wrong password.'
-                    }, (data) => res.send(data));
+                    return resPayload(404, 'Authentication failed. Wrong password.', (data) => res.send(data));
 
                 if (!matched)
-                    return resPayload(404, {
-                        message: 'Authentication failed. Wrong password.'
-                    }, (data) => res.send(data));
+                    return resPayload(404, "Wrong password.", (data) => res.send(data));
 
                 let token = jwt.sign({
                     username: user.username
@@ -206,9 +168,7 @@ auth.login = (req, res) => {
             });
         })
         .catch(
-            err => resPayload(404, {
-                message: err
-            }, (data) => res.send(data))
+            err => resPayload(404, err, (data) => res.send(data))
         );
 };
 
@@ -223,23 +183,15 @@ auth.register = (req, res) => {
 
     bcrypt.hash(req.body.password, 10, function (err, hash) {
         if (err)
-            return resPayload(404, {
-                message: err
-            }, (data) => res.send(data));;
+            return resPayload(404, err, (data) => res.send(data));
 
-        // Store hash in database
-        req.body.password = hash;
+        req.body.password = hash; // Store hash in database
         let user = new Users(req.body);
         user.save((err) => {
             if (err)
-                return resPayload(404, {
-                    message: err
-                }, (data) => res.send(data));;
+                return resPayload(404, err, (data) => res.send(data));;
 
-            return resPayload(200, {
-                message: "Registration successfully",
-                token,
-            }, (data) => res.send(data));
+            return resPayload(200, "Registration successfully", (data) => res.send(data));
         });
     });
 }

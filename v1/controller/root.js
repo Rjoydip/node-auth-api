@@ -6,9 +6,7 @@ const {
 let root = module.exports = exports = {};
 
 root.index = (req, res) => {
-    return resPayload(200, {
-        message: "Welcome to delivery api system"
-    }, (data) => res.send(data));
+    return resPayload(200, "Welcome to delivery api system", (data) => res.send(data));
 };
 
 root.version = (req, res) => {
