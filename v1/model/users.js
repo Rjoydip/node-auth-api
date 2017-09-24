@@ -9,7 +9,10 @@ const User = new Schema({
     password: {
         type: String
     },
-    email: String,
+    email: {
+        type: String,
+        unique: true
+    },
     token: String,
     resetToken: String,
     resetTokenExpires: {

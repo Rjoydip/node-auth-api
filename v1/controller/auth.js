@@ -75,23 +75,41 @@ auth.setToken = (req, res) => {
             if (!user) {
                 return res.redirect('back');
             }
+
+            if (user.resetToken === '' || user.resetToken === null)
+                return resPayload(404, "Token expired", (data) => res.send(data));
+
             bcrypt.hash(req.body.password, 10, function (err, hash) {
                 if (err)
                     return resPayload(404, err, (data) => res.send(data));
 
+                console.log(user._id, hash);
                 // Store hash in database
                 user.password = hash;
-                user.resetToken = undefined;
-                user.resetTokenExpires = undefined;
+                user.resetToken = '';
+                user.resetTokenExpires = Date.now;
 
-                user.save((err) => {
+                Users.update({
+                    _id: user._id
+                }, {
+                    user
+                }, (err) => {
                     if (err)
                         return resPayload(404, "Oops! password doesn't saved. Please try again!", (data) => res.send(data));
 
-                    return resPayload(200, "Password saved successfully", (data) => res.send(data));
+                    sendMail({
+                        user,
+                        subject: "Password has been reset",
+                        text: `Your password has been reset successfully`
+                    }, (error, info) => {
+                        if (error)
+                            return resPayload(404, error, (data) => res.send(data));
+
+                        return resPayload(200, "Password saved successfully", (data) => res.send(data));
+                    }); // sendMail end
                 });
-            });
-        })
+            }); // bcrypt end
+        }) // then end
         .catch(err => resPayload(404, err, (data) => res.send(data)));
 };
 
@@ -105,14 +123,18 @@ auth.forgot = (req, res) => {
             if (!user)
                 return resPayload(404, "User not found", (data) => res.send(data));
 
-            crypto.randomBytes(20, function (err, buf) {
+            crypto.randomBytes(10, function (err, buf) {
                 if (err)
                     return resPayload(404, err, (data) => res.send(data));
 
                 user.resetToken = buf.toString('hex');
                 user.resetTokenExpires = Date.now() + 3600000; // 1 hour
 
-                sendMail(user, user.resetToken, req.headers.host, (error, info) => {
+                sendMail({
+                    user,
+                    subject: "Reset your password",
+                    text: `Here is your reset password link. \nhttp://${req.headers.host}${API_PREFIX}/auth/reset/${user.resetToken}`
+                }, (error, info) => {
                     if (error)
                         return resPayload(404, error, (data) => res.send(data));
 
@@ -156,7 +178,12 @@ auth.login = (req, res) => {
                     _id: user._id
                 }, {
                     token
-                }, () => {
+                }, (err) => {
+                    if (err)
+                        return resPayload(404, {
+                            err
+                        }, (data) => res.send(data));
+
                     return resPayload(200, {
                         token
                     }, (data) => res.send(data));
@@ -169,14 +196,6 @@ auth.login = (req, res) => {
 };
 
 auth.register = (req, res) => {
-    // create a sample user
-    let token = req.body.token = jwt.sign({
-        username: req.body.username
-    }, SUPER_SECRET, {
-        expiresIn: '10m',
-        algorithm: 'HS256'
-    });
-
     bcrypt.hash(req.body.password, 10, function (err, hash) {
         if (err)
             return resPayload(404, err, (data) => res.send(data));
@@ -185,7 +204,18 @@ auth.register = (req, res) => {
         let user = new Users(req.body);
         user.save((err) => {
             if (err)
-                return resPayload(404, err, (data) => res.send(data));;
+                return resPayload(404, err, (data) => res.send(data));
+
+            sendMail({
+                user,
+                subject: "Welcome to delivery api system",
+                text: `Hi ! I am the admin of this system welcome to here`
+            }, (error, info) => {
+                if (error)
+                    return resPayload(404, error, (data) => res.send(data));
+
+                return resPayload(200, info, (data) => res.send(data))
+            });
 
             return resPayload(200, "Registration successfully", (data) => res.send(data));
         });

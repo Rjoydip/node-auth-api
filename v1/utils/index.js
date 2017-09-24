@@ -2,10 +2,6 @@
 const nodemailer = require('nodemailer');
 const HTTPStatus = require('http-status');
 
-const {
-    API_PREFIX
-} = require("../configs");
-
 module.exports = {
     resPayload: (statusCode, payload, done) => {
         done(
@@ -22,7 +18,7 @@ module.exports = {
             }
         );
     },
-    sendMail: (user, token, host, done) => {
+    sendMail: (data, done) => {
         nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -31,9 +27,9 @@ module.exports = {
             }
         }).sendMail({
             from: process.env.MAIL_USER,
-            to: user.email,
-            subject: 'Reset your password',
-            text: `Here is your reset password link. \nhttp://${host}${API_PREFIX}/auth/reset/${token}`,
+            to: data.user.email,
+            subject: data.subject,
+            text: data.text,
             // html: ``
         }, (error, info) => {
             done(error, info)
