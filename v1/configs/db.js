@@ -6,8 +6,6 @@ const {
     MONGOLAB_URI
 } = require("./index");
 
-console.log(MONGOLAB_URI);
-
 //Set up default mongoose connection
 mongoose.connect(process.env.MONGOLAB_URI || MONGOLAB_URI, {
     useMongoClient: true

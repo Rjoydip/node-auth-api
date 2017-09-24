@@ -7,6 +7,7 @@ const {
 } = require("../middleware");
 
 router.get('/', authCtrl.index);
+router.get('/reset', authCtrl.reset);
 router.post('/login', authCtrl.login);
 router.post('/register', authCtrl.register);
 router.get('/user', verifyToken, authCtrl.index);

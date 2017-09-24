@@ -7,12 +7,6 @@ const {
     SUPER_SECRET
 } = require("./configs/index");
 
-module.exports.notFound = (req, res, next) => {
-    if (!req.route)
-        resPayload(502, {}, (data) => res.send(data));
-    next();
-};
-
 module.exports.verifyToken = (req, res, next) => {
     // check header or url parameters or post parameters for token
     let token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -20,7 +14,6 @@ module.exports.verifyToken = (req, res, next) => {
     if (token)
         // verifies secret and checks exp
         jwt.verify(token, SUPER_SECRET, function (err, decoded) {
-            console.log(decoded)
             if (err)
                 return res.json({
                     success: false,

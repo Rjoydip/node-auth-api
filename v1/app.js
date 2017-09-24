@@ -2,12 +2,14 @@
 
 const express = require('express');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 const cors = require("cors");
 const compression = require("compression");
 const helmet = require("helmet");
 const morgan = require('morgan');
+const HTTPStatus = require('http-status');
 
 const {
   SUPER_SECRET,
@@ -55,17 +57,36 @@ app.use(helmet());
 app.use(morgan('dev'));
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({
-  extended: false
-}));
-
-// parse application/json
 app.use(bodyParser.json());
-// serve favicon
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(cookieParser());
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'favicon.ico')));
 
 //  Connect all our routes to our application
 app.use(require('./routes'));
 
-// exposing app
-module.exports = exports = app;
+// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  let err = {};
+  err.status = 404;
+  err.message = HTTPStatus[err.status];
+  next(err);
+});
+
+// error handler
+app.use((err, req, res, next) => {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+module.exports = app;

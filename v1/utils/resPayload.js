@@ -12,7 +12,7 @@ module.exports = (statusCode, payload, done) => {
             status: statusCode,
             success: false,
             message: HTTPStatus[statusCode],
-            data: payload
+            error: payload
         }
     );
 };
