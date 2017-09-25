@@ -22,12 +22,16 @@ auth.index = (req, res) => {
 auth.user = (req, res) => {
     Users
         .findOne({
-            username: req.body.username
+            $or: [{
+                username: req.body.username
+            }, {
+                email: req.body.email
+            }]
         })
         .select(['-password', '-token', '-resetTokenExpires', '-created_at', '-updated_at', '-__v'])
         .exec()
         .then(user => {
-            if(!user) resPayload(200, "User not found", (data) => res.send(data))
+            if (!user) resPayload(200, "User not found", (data) => res.send(data))
             resPayload(200, user, (data) => res.send(data))
         }).catch(err => resPayload(404, err, (data) => res.send(data)));
 };
