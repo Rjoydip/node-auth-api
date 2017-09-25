@@ -26,11 +26,10 @@ auth.user = (req, res) => {
         })
         .select(['-password', '-token', '-resetTokenExpires', '-created_at', '-updated_at', '-__v'])
         .exec()
-        .then(
-            user => resPayload(200, user, (data) => res.send(data))
-        ).catch(
-            err => resPayload(404, err, (data) => res.send(data))
-        );
+        .then(user => {
+            if(!user) resPayload(200, "User not found", (data) => res.send(data))
+            resPayload(200, user, (data) => res.send(data))
+        }).catch(err => resPayload(404, err, (data) => res.send(data)));
 };
 
 auth.users = (req, res) => {
@@ -79,23 +78,18 @@ auth.setToken = (req, res) => {
             if (user.resetToken === '' || user.resetToken === null)
                 return resPayload(404, "Token expired", (data) => res.send(data));
 
-            bcrypt.hash(req.body.password, 10, function (err, hash) {
+            bcrypt.hash(req.body.password, 10, (err, hash) => {
                 if (err)
                     return resPayload(404, err, (data) => res.send(data));
 
-                console.log(user._id, hash);
                 // Store hash in database
                 user.password = hash;
                 user.resetToken = '';
-                user.resetTokenExpires = Date.now;
+                user.resetTokenExpires = Date.now() + 3600000;
 
-                Users.update({
-                    _id: user._id
-                }, {
-                    user
-                }, (err) => {
+                user.save(err => {
                     if (err)
-                        return resPayload(404, "Oops! password doesn't saved. Please try again!", (data) => res.send(data));
+                        return resPayload(404, err.errors.resetTokenExpires, (data) => res.send(data));
 
                     sendMail({
                         user,
@@ -105,7 +99,7 @@ auth.setToken = (req, res) => {
                         if (error)
                             return resPayload(404, error, (data) => res.send(data));
 
-                        return resPayload(200, "Password saved successfully", (data) => res.send(data));
+                        return resPayload(200, "Password reset successfully", (data) => res.send(data));
                     }); // sendMail end
                 });
             }); // bcrypt end
@@ -121,9 +115,9 @@ auth.forgot = (req, res) => {
         .exec()
         .then(user => {
             if (!user)
-                return resPayload(404, "User not found", (data) => res.send(data));
+                return resPayload(404, "Email not registered", (data) => res.send(data));
 
-            crypto.randomBytes(10, function (err, buf) {
+            crypto.randomBytes(30, (err, buf) => {
                 if (err)
                     return resPayload(404, err, (data) => res.send(data));
 
@@ -138,7 +132,7 @@ auth.forgot = (req, res) => {
                     if (error)
                         return resPayload(404, error, (data) => res.send(data));
 
-                    user.save(function (err) {
+                    user.save(err => {
                         if (err)
                             return resPayload(404, "Oops! faild to saved token. Please try again!", (data) => res.send(data));
 
@@ -160,7 +154,8 @@ auth.login = (req, res) => {
             if (!user)
                 return resPayload(404, 'User not found.', (data) => res.send(data));
 
-            bcrypt.compare(req.body.password, user.password, function (err, matched) {
+            bcrypt.compare(req.body.password, user.password, (err, matched) => {
+
                 if (err) // Passwords match
                     return resPayload(404, 'Authentication failed. Wrong password.', (data) => res.send(data));
 
@@ -174,11 +169,9 @@ auth.login = (req, res) => {
                     algorithm: 'HS256'
                 });
 
-                Users.update({
-                    _id: user._id
-                }, {
-                    token
-                }, (err) => {
+                user.token = token;
+
+                user.update(err => {
                     if (err)
                         return resPayload(404, {
                             err
@@ -196,7 +189,7 @@ auth.login = (req, res) => {
 };
 
 auth.register = (req, res) => {
-    bcrypt.hash(req.body.password, 10, function (err, hash) {
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
         if (err)
             return resPayload(404, err, (data) => res.send(data));
 
