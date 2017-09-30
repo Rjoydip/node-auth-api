@@ -10,5 +10,4 @@ $ cd node-delivery-api
 $ npm install
 $ npm start
 ```
-
 Your app should now be running on [localhost:8100](http://localhost:8100).
