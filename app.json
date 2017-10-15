@@ -1,14 +1,11 @@
 {
-  "name": "Delivery api",
-  "description": "A Node.js app for delivery dabba using Express 4",
-  "repository": "https://github.com/nodeXD/delivery.git",
+  "name": "Node Auth Api",
+  "description": "A Node.js app auth api using Express 4",
+  "repository": "https://github.com/Rjoydip/node-auth-api.git",
   "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/master/public/node.svg",
   "keywords": [
     "node",
-    "heroku",
-    "express",
-    "delivery",
-    "delivery-api"
+    "heroku"
   ],
   "image": "heroku/nodejs"
 }
